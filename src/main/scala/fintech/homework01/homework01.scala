@@ -32,10 +32,11 @@ package fintech.homework01
 class Hangman(io: IODevice) {
 
   def getUserInput(currentWord: String, mistakes: Int): String = {
+    val add = ""
     if (mistakes > 0)
       io.printLine(stages(mistakes - 1))
-    io.printLine("Word: " + currentWord)
-    io.printLine("Guess a letter:")
+    io.printLine("""Word: """ + currentWord)
+    io.printLine("""Guess a letter:""")
 
     io.readLine()
   }
@@ -45,26 +46,22 @@ class Hangman(io: IODevice) {
   }
 
   def getNewWordState(guessingLetter: Char, currentWord: String, word: String): String = {
-    val newWord = StringBuilder.newBuilder
-    for (i <- Range(0, word.length()) ) {
-      newWord.append(
-        if (guessingLetter == word.charAt(i))
-          word.charAt(i)
-        else
-          currentWord.charAt(i)
-      )
-    }
-
-    newWord.toString()
+    val newWord = for (i <- word.indices) yield
+      if (guessingLetter == word.charAt(i))
+        word.charAt(i)
+      else
+        currentWord.charAt(i)
+    newWord.mkString
   }
 
   def printEndOfGameMessage(word: String, points: Int): Unit ={
     if (points == word.length()) {
-      println("You won!")
-      println("The word was " + word)
+      println("""You won!""")
+      println("""The word was """ + word)
     }
-    else
-      println("You are dead")
+    else {
+      println(stages(stages.size - 1) + """You are dead""")
+    }
   }
 
   def play(word: String): Unit = {
@@ -76,18 +73,16 @@ class Hangman(io: IODevice) {
       val userInput = getUserInput(currentWord, mistakes)
       if (isCorrectInput(userInput)) {
         val newWord = getNewWordState(userInput.charAt(0), currentWord, word)
-        if (currentWord == newWord || used.contains(userInput.charAt(0))) {
+        if (currentWord == newWord || used.contains(userInput.charAt(0)))
           mistakes += 1
-        }
         else {
           points += 1
           used += userInput.charAt(0)
           currentWord = newWord
         }
       }
-      else {
+      else
         io.printLine("Incorrect input. Expected a letter")
-      }
     }
     printEndOfGameMessage(word, points)
   }
