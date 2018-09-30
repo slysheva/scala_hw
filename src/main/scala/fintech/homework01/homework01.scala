@@ -31,7 +31,9 @@ package fintech.homework01
 
 class Hangman(io: IODevice) {
 
-  def getUserInput(currentWord: String): String = {
+  def getUserInput(currentWord: String, mistakes: Int): String = {
+    if (mistakes > 0)
+      io.printLine(stages(mistakes - 1))
     io.printLine("Word: " + currentWord)
     io.printLine("Guess a letter:")
 
@@ -52,11 +54,8 @@ class Hangman(io: IODevice) {
           currentWord.charAt(i)
       )
     }
-    newWord.toString()
-  }
 
-  def printBadLetterMessage(mistakes: Int): Unit = {
-    io.printLine(stages(mistakes - 1))
+    newWord.toString()
   }
 
   def printEndOfGameMessage(word: String, points: Int): Unit ={
@@ -72,16 +71,17 @@ class Hangman(io: IODevice) {
     var currentWord = "_" * word.length()
     var mistakes = 0
     var points = 0
+    var used :Set[Char] = Set()
     while (points < word.length() && mistakes < stages.size) {
-      val userInput = getUserInput(currentWord)
+      val userInput = getUserInput(currentWord, mistakes)
       if (isCorrectInput(userInput)) {
         val newWord = getNewWordState(userInput.charAt(0), currentWord, word)
-        if (currentWord == newWord) {
+        if (currentWord == newWord || used.contains(userInput.charAt(0))) {
           mistakes += 1
-          printBadLetterMessage(mistakes)
         }
         else {
           points += 1
+          used += userInput.charAt(0)
           currentWord = newWord
         }
       }
