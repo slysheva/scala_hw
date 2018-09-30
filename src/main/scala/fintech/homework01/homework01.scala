@@ -54,8 +54,8 @@ class Hangman(io: IODevice) {
     newWord.mkString
   }
 
-  def printEndOfGameMessage(word: String, points: Int): Unit ={
-    if (points == word.length()) {
+  def printEndOfGameMessage(word: String, currentWord: String): Unit ={
+    if (currentWord == word) {
       io.printLine("""You won!""")
       io.printLine("""The word was """ + word)
     }
@@ -67,16 +67,14 @@ class Hangman(io: IODevice) {
   def play(word: String): Unit = {
     var currentWord = "_" * word.length()
     var mistakes = 0
-    var points = 0
     var used :Set[Char] = Set()
-    while (points < word.length() && mistakes < stages.size) {
+    while (word != currentWord && mistakes < stages.size) {
       val userInput = getUserInput(currentWord, mistakes)
       if (isCorrectInput(userInput)) {
         val newWord = getNewWordState(userInput.charAt(0), currentWord, word)
         if (currentWord == newWord || used.contains(userInput.charAt(0)))
           mistakes += 1
         else {
-          points += 1
           used += userInput.charAt(0)
           currentWord = newWord
         }
@@ -84,7 +82,7 @@ class Hangman(io: IODevice) {
       else
         io.printLine("Incorrect input. Expected a letter")
     }
-    printEndOfGameMessage(word, points)
+    printEndOfGameMessage(word, currentWord)
   }
 
   val stages = List(
