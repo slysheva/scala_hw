@@ -56,11 +56,11 @@ class Hangman(io: IODevice) {
 
   def printEndOfGameMessage(word: String, points: Int): Unit ={
     if (points == word.length()) {
-      println("""You won!""")
-      println("""The word was """ + word)
+      io.printLine("""You won!""")
+      io.printLine("""The word was """ + word)
     }
     else {
-      println(stages(stages.size - 1) + """You are dead""")
+      io.printLine(stages(stages.size - 1) + """You are dead""")
     }
   }
 
